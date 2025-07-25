@@ -18,18 +18,22 @@ class GcpIprangeController(val gcpIpRangeService: GcpIprangeService) {
     fun getIpRangesByRegion(
             @RequestParam(required = false, defaultValue = "ALL") region: String,
             @RequestParam(required = false, defaultValue = "ALL") ipVersion: String
-    ): ResponseEntity<Any> {
+    ): ResponseEntity<String> {
 
         val regionEnum = try {
             Region.valueOf(region.uppercase())
         } catch (ex: IllegalArgumentException) {
-            return ResponseEntity.badRequest().body("Ungültige Region: '$region'. Erlaubte Werte sind: ${Region.entries.joinToString()}")
-
+            return ResponseEntity
+                    .badRequest()
+                    .body("Ungültige Region: '$region'. Erlaubte Werte sind: ${Region.entries.joinToString()}")
         }
+
         val ipVersionEnum = try {
             IpVersion.valueOf(ipVersion.uppercase())
         } catch (ex: IllegalArgumentException) {
-            return  ResponseEntity.badRequest().body("Ungültige ip Version: '$ipVersion'. Erlaubte Werte sind: ${IpVersion.entries.joinToString()}")
+            return ResponseEntity
+                    .badRequest()
+                    .body("Ungültige ip Version: '$ipVersion'. Erlaubte Werte sind: ${IpVersion.entries.joinToString()}")
         }
 
         val results = gcpIpRangeService.getIpRangesByRegionAndByIpVersion(regionEnum, ipVersionEnum)

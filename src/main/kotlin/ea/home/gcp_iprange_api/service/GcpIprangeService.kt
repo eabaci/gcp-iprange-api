@@ -19,7 +19,10 @@ class GcpIprangeService(
         return response?.prefixes ?: emptyList()
     }
 
-    fun getIpRangesByRegionAndByIpVersion(region: Region = Region.ALL, ipVersion: IpVersion = IpVersion.ALL): List<String> {
+    fun getIpRangesByRegionAndByIpVersion(
+            region: Region = Region.ALL,
+            ipVersion: IpVersion = IpVersion.ALL
+    ): List<String> {
         val ipRanges = getIpRanges()
 
         val filteredByRegion = if (region == Region.ALL) {
