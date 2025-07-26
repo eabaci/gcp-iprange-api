@@ -1,17 +1,17 @@
-package ea.home.gcp_iprange_api.service
+package ea.home.gcp.service
 
-import ea.home.gcp_iprange_api.common.IpVersion
-import ea.home.gcp_iprange_api.common.Region
-import ea.home.gcp_iprange_api.dto.GcpIpRange
-import ea.home.gcp_iprange_api.dto.GcpIpRangesResponse
+import ea.home.gcp.common.IpVersion
+import ea.home.gcp.common.Region
+import ea.home.gcp.dto.GcpIpRange
+import ea.home.gcp.dto.GcpIpRangesResponse
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 
 @Service
 class GcpIprangeService(
-        private val restTemplate: RestTemplate,
-        @Value("\${gcp.ipranges.url}") private val gcpIpRangesUrl: String
+    private val restTemplate: RestTemplate,
+    @Value("\${gcp.ipranges.url}") private val gcpIpRangesUrl: String
 ) {
 
     fun getIpRanges(): List<GcpIpRange> {
@@ -20,8 +20,8 @@ class GcpIprangeService(
     }
 
     fun getIpRangesByRegionAndByIpVersion(
-            region: Region = Region.ALL,
-            ipVersion: IpVersion = IpVersion.ALL
+        region: Region = Region.ALL,
+        ipVersion: IpVersion = IpVersion.ALL
     ): List<String> {
         val ipRanges = getIpRanges()
 

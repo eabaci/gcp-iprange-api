@@ -1,11 +1,11 @@
-package ea.home.gcp_iprange_api.controller
+package ea.home.gcp.controller
 
-import ea.home.gcp_iprange_api.common.IpVersion
-import ea.home.gcp_iprange_api.common.Region
-import ea.home.gcp_iprange_api.config.GcpIprangeTestConfig
-import ea.home.gcp_iprange_api.dto.GcpIpRange
-import ea.home.gcp_iprange_api.dto.GcpIpRangesResponse
-import ea.home.gcp_iprange_api.service.GcpIprangeService
+import ea.home.gcp.common.IpVersion
+import ea.home.gcp.common.Region
+import ea.home.gcp.config.GcpIprangeTestConfig
+import ea.home.gcp.dto.GcpIpRange
+import ea.home.gcp.dto.GcpIpRangesResponse
+import ea.home.gcp.service.GcpIprangeService
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.ArgumentMatchers.eq
@@ -38,13 +38,13 @@ class GcpIprangeControllerTest {
         // given
         val gcpIpRanges = listOf("2600:1900:8000::/44")
         val mockResponse = GcpIpRangesResponse(
-                prefixes = listOf(
-                        GcpIpRange("35.185.128.0/19", null, "Google Cloud", "asia-east1"),
-                        GcpIpRange("1.1.1.0/24", null, "Google Cloud", "europe-west1"),
-                        GcpIpRange("35.185.160.0/20", null, "Google Cloud", "asia-east1"),
-                        GcpIpRange(null, "2600:1900:8000::/44", "Google Cloud", "africa-south1"),
-                        GcpIpRange(null, "2600:1900:4030::/44", "Google Cloud", "asia-east1")
-                )
+            prefixes = listOf(
+                GcpIpRange("35.185.128.0/19", null, "Google Cloud", "asia-east1"),
+                GcpIpRange("1.1.1.0/24", null, "Google Cloud", "europe-west1"),
+                GcpIpRange("35.185.160.0/20", null, "Google Cloud", "asia-east1"),
+                GcpIpRange(null, "2600:1900:8000::/44", "Google Cloud", "africa-south1"),
+                GcpIpRange(null, "2600:1900:4030::/44", "Google Cloud", "asia-east1")
+            )
         )
 
         // when
@@ -53,8 +53,8 @@ class GcpIprangeControllerTest {
 
         // then
         mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/gcp-ipranges?region=AF&ipVersion=IPV6"))
-                .andExpect(MockMvcResultMatchers.status().isOk)
-                .andExpect(MockMvcResultMatchers.jsonPath("$").value("2600:1900:8000::/44"))
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andExpect(MockMvcResultMatchers.jsonPath("$").value("2600:1900:8000::/44"))
     }
 
     @Test
@@ -62,11 +62,11 @@ class GcpIprangeControllerTest {
         // given
         val gcpIpRanges = listOf("34.1.208.0/20", "34.85.0.0/17", "35.243.8.0/21")
         val mockResponse = GcpIpRangesResponse(
-                prefixes = listOf(
-                        GcpIpRange("34.1.208.0/20", null, "Google Cloud", "africa-south1"),
-                        GcpIpRange("34.85.0.0/17", null, "Google Cloud", "africa-south1"),
-                        GcpIpRange("35.243.8.0/21", null, "Google Cloud", "africa-south1")
-                )
+            prefixes = listOf(
+                GcpIpRange("34.1.208.0/20", null, "Google Cloud", "africa-south1"),
+                GcpIpRange("34.85.0.0/17", null, "Google Cloud", "africa-south1"),
+                GcpIpRange("35.243.8.0/21", null, "Google Cloud", "africa-south1")
+            )
         )
 
         // when
@@ -75,22 +75,24 @@ class GcpIprangeControllerTest {
 
         // then
         mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/gcp-ipranges"))
-                .andExpect(MockMvcResultMatchers.status().isOk)
-                .andExpect(MockMvcResultMatchers.jsonPath("$")
-                        .value("34.1.208.0/20\n34.85.0.0/17\n35.243.8.0/21"))
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$")
+                    .value("34.1.208.0/20\n34.85.0.0/17\n35.243.8.0/21")
+            )
     }
 
     @Test
     fun `should return bad request by invalid region`() {
         // when & then
         mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/gcp-ipranges?region=ABZ"))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest)
+            .andExpect(MockMvcResultMatchers.status().isBadRequest)
     }
 
     @Test
     fun `should return bad request by invalid ip version`() {
         // when & then
         mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/gcp-ipranges?ipVersion=ABZ"))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest)
+            .andExpect(MockMvcResultMatchers.status().isBadRequest)
     }
 }

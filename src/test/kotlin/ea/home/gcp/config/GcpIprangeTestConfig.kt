@@ -1,6 +1,6 @@
-package ea.home.gcp_iprange_api.config
+package ea.home.gcp.config
 
-import ea.home.gcp_iprange_api.service.GcpIprangeService
+import ea.home.gcp.service.GcpIprangeService
 import org.mockito.Mockito.mock
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
@@ -15,5 +15,5 @@ class GcpIprangeTestConfig {
     @Bean
     @Primary
     fun gcpIprangeService(): GcpIprangeService =
-            GcpIprangeService(restTemplate(), "https://example.com")
+        GcpIprangeService(restTemplate(), "https://example.com")
 }

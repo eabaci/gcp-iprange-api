@@ -23,12 +23,9 @@ It provides a REST endpoint that filters the ranges by region and IP version (IP
 - Includes unit tests
 - Dockerfile and GitHub Actions pipeline
 
----
-
 ## API Endpoint
 
 ### `GET /ip-ranges`
-
 Returns a list of IP ranges filtered by query parameters.
 
 #### Query Parameters:
@@ -47,9 +44,9 @@ GET /api/v1/gcp-ipranges?region=US&ipVersion=ipv6
 GET /api/v1/gcp-ipranges?region=ALL&ipVersion=ipv4
 ```
 
-### Setup & Start with Docker Compose ###
+## Setup & Start with Docker Compose
 
-#### 1. Build the Kotlin project ####
+### 1. Build the Kotlin project
 
 Make sure your Kotlin project is built and the JAR file is located in `build/libs/`.
 Example using Gradle:
@@ -57,16 +54,16 @@ Example using Gradle:
 ./gradlew build
 ```
 
-#### 2. Start Docker Compose ####
+### 2. Start Docker Compose
 In the project directory (where docker-compose.yml is located), build and start the container:
 ```bash
 docker compose up --build
 ```
 
-#### 3. Use the application ####
+### 3. Use the application
 The application is accessible at: http://localhost:8080
 
-#### 4. Stop the containers ####
+### 4. Stop the containers
 To stop the containers, run in the same directory:
 ```bash
 docker compose down

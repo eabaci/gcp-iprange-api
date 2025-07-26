@@ -1,3 +1,3 @@
-package ea.home.gcp_iprange_api.dto
+package ea.home.gcp.dto
 
 data class GcpIpRangesResponse(val prefixes: List<GcpIpRange>)

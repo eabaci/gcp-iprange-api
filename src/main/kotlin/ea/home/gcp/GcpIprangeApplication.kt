@@ -1,4 +1,4 @@
-package ea.home.gcp_iprange_api
+package ea.home.gcp
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication

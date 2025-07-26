@@ -1,4 +1,4 @@
-package ea.home.gcp_iprange_api.config
+package ea.home.gcp.config
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

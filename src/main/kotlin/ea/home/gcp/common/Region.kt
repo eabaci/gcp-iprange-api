@@ -1,4 +1,4 @@
-package ea.home.gcp_iprange_api.common
+package ea.home.gcp.common
 
 enum class Region(val scopes: List<String>) {
     EU(listOf("europe-west1", "europe-west2", "europe-west3", "europe-west4", "europe-west6")),
