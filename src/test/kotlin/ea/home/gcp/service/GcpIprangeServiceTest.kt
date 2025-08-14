@@ -316,4 +316,107 @@ class GcpIprangeServiceTest {
         assertEquals("35.185.160.0/20", ipRanges[0])
         assertEquals("2600:1900:8000::/44", ipRanges[1])
     }
+
+    @Test
+    fun `get ip ranges by region ALL and by ip version ALL with invalid regions`() {
+        // given
+        val mockResponse = GcpIpRangesResponse(
+            prefixes = listOf(
+                GcpIpRange("35.185.128.0/19", null, "Google Cloud", "invalid"),
+                GcpIpRange("1.1.1.0/24", null, "Google Cloud", null),
+                GcpIpRange("35.185.160.0/20", null, "Google Cloud", "asia-east1"),
+                GcpIpRange(null, "2600:1900:8000::/44", "Google Cloud", "invalid"),
+                GcpIpRange(null, "2600:1900:4030::/44", "Google Cloud", "asia-east1")
+            )
+        )
+
+        // rules
+        `when`(restTemplate.getForObject(testUrl, GcpIpRangesResponse::class.java)).thenReturn(mockResponse)
+
+        // when
+        val ipRanges: List<String> = gcpIprangeService.getIpRangesByRegionAndByIpVersion()
+
+        // then
+        assertEquals(5, ipRanges.size)
+        assertEquals("35.185.128.0/19", ipRanges[0])
+        assertEquals("1.1.1.0/24", ipRanges[1])
+        assertEquals("35.185.160.0/20", ipRanges[2])
+        assertEquals("2600:1900:8000::/44", ipRanges[3])
+        assertEquals("2600:1900:4030::/44", ipRanges[4])
+    }
+
+    @Test
+    fun `skip ip ranges by region AS and by ip version ALL with invalid regions`() {
+        // given
+        val region = Region.AS
+        val mockResponse = GcpIpRangesResponse(
+            prefixes = listOf(
+                GcpIpRange("35.185.128.0/19", null, "Google Cloud", "invalid"),
+                GcpIpRange("1.1.1.0/24", null, "Google Cloud", null),
+                GcpIpRange("35.185.160.0/20", null, "Google Cloud", "asia-east1"),
+                GcpIpRange(null, "2600:1900:8000::/44", "Google Cloud", "invalid"),
+                GcpIpRange(null, "2600:1900:4030::/44", "Google Cloud", "asia-east1")
+            )
+        )
+
+        // rules
+        `when`(restTemplate.getForObject(testUrl, GcpIpRangesResponse::class.java)).thenReturn(mockResponse)
+
+        // when
+        val ipRanges: List<String> = gcpIprangeService.getIpRangesByRegionAndByIpVersion(region = region)
+
+        // then
+        assertEquals(2, ipRanges.size)
+        assertEquals("35.185.160.0/20", ipRanges[0])
+        assertEquals("2600:1900:4030::/44", ipRanges[1])
+    }
+
+    @Test
+    fun `skip ip ranges by region AS and by ip version ALL with invalid regions and invalid ipPrefix`() {
+        // given
+        val region = Region.AS
+        val mockResponse = GcpIpRangesResponse(
+            prefixes = listOf(
+                GcpIpRange("35.185.128.0/19", null, "Google Cloud", "invalid"),
+                GcpIpRange("1.1.1.0/24", null, "Google Cloud", null),
+                GcpIpRange(null, null, "Google Cloud", "asia-east1"),
+                GcpIpRange(null, "2600:1900:8000::/44", "Google Cloud", "invalid"),
+                GcpIpRange(null, "2600:1900:4030::/44", "Google Cloud", "asia-east1")
+            )
+        )
+
+        // rules
+        `when`(restTemplate.getForObject(testUrl, GcpIpRangesResponse::class.java)).thenReturn(mockResponse)
+
+        // when
+        val ipRanges: List<String> = gcpIprangeService.getIpRangesByRegionAndByIpVersion(region = region)
+
+        // then
+        assertEquals(1, ipRanges.size)
+        assertEquals("2600:1900:4030::/44", ipRanges[0])
+    }
+
+    @Test
+    fun `skip ip ranges by region ALL and by invalid ipPrefix`() {
+        // given
+        val ipVersion: IpVersion = IpVersion.IPV4
+        val mockResponse = GcpIpRangesResponse(
+            prefixes = listOf(
+                GcpIpRange(null, null, "Google Cloud", "asia-east1"),
+                GcpIpRange(null, null, "Google Cloud", "europe-west1"),
+                GcpIpRange(null, null, "Google Cloud", "asia-east1"),
+                GcpIpRange(null, null, "Google Cloud", "africa-south1"),
+                GcpIpRange(null, null, "Google Cloud", "asia-east1")
+            )
+        )
+
+        // rules
+        `when`(restTemplate.getForObject(testUrl, GcpIpRangesResponse::class.java)).thenReturn(mockResponse)
+
+        // when
+        val ipRanges: List<String> = gcpIprangeService.getIpRangesByRegionAndByIpVersion(ipVersion = ipVersion)
+
+        // then
+        assertEquals(0, ipRanges.size)
+    }
 }
