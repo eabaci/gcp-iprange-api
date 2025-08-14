@@ -207,9 +207,15 @@ class GcpIprangeServiceTest {
             prefixes = listOf(
                 GcpIpRange("35.185.128.0/19", null, "Google Cloud", "asia-east1"),
                 GcpIpRange("1.1.1.0/24", null, "Google Cloud", "europe-west1"),
-                GcpIpRange("35.185.160.0/20", null, "Google Cloud", "asia-east1"),
+                GcpIpRange("35.185.161.0/20", null, "Google Cloud", "asia-east2"),
+                GcpIpRange("35.185.160.0/20", null, "Google Cloud", "asia-northeast1"),
+                GcpIpRange("35.185.162.0/20", null, "Google Cloud", "asia-northeast2"),
+                GcpIpRange("35.185.163.0/20", null, "Google Cloud", "asia-northeast3"),
+                GcpIpRange("35.185.164.0/20", null, "Google Cloud", "asia-south1"),
+                GcpIpRange("35.185.165.0/20", null, "Google Cloud", "asia-south2"),
                 GcpIpRange(null, "2600:1900:8000::/44", "Google Cloud", "africa-south1"),
-                GcpIpRange(null, "2600:1900:4030::/44", "Google Cloud", "asia-east1")
+                GcpIpRange(null, "2600:1900:4030::/44", "Google Cloud", "asia-southeast1"),
+                GcpIpRange(null, "2600:1900:4031::/44", "Google Cloud", "asia-southeast2")
             )
         )
 
@@ -220,10 +226,16 @@ class GcpIprangeServiceTest {
         val ipRanges: List<String> = gcpIprangeService.getIpRangesByRegionAndByIpVersion(region = region)
 
         // then
-        assertEquals(3, ipRanges.size)
+        assertEquals(9, ipRanges.size)
         assertEquals("35.185.128.0/19", ipRanges[0])
-        assertEquals("35.185.160.0/20", ipRanges[1])
-        assertEquals("2600:1900:4030::/44", ipRanges[2])
+        assertEquals("35.185.161.0/20", ipRanges[1])
+        assertEquals("35.185.160.0/20", ipRanges[2])
+        assertEquals("35.185.162.0/20", ipRanges[3])
+        assertEquals("35.185.163.0/20", ipRanges[4])
+        assertEquals("35.185.164.0/20", ipRanges[5])
+        assertEquals("35.185.165.0/20", ipRanges[6])
+        assertEquals("2600:1900:4030::/44", ipRanges[7])
+        assertEquals("2600:1900:4031::/44", ipRanges[8])
     }
 
     @Test
@@ -277,5 +289,31 @@ class GcpIprangeServiceTest {
         assertEquals(2, ipRanges.size)
         assertEquals("2600:1900:8000::/44", ipRanges[0])
         assertEquals("2600:1900:4030::/44", ipRanges[1])
+    }
+
+    @Test
+    fun `get ip ranges by region GLOBAL`() {
+        // given
+        val region: Region = Region.GLOBAL
+        val mockResponse = GcpIpRangesResponse(
+            prefixes = listOf(
+                GcpIpRange("35.185.128.0/19", null, "Google Cloud", "asia-east1"),
+                GcpIpRange("1.1.1.0/24", null, "Google Cloud", "europe-west1"),
+                GcpIpRange("35.185.160.0/20", null, "Google Cloud", "global"),
+                GcpIpRange(null, "2600:1900:8000::/44", "Google Cloud", "global"),
+                GcpIpRange(null, "2600:1900:4030::/44", "Google Cloud", "asia-east1")
+            )
+        )
+
+        // rules
+        `when`(restTemplate.getForObject(testUrl, GcpIpRangesResponse::class.java)).thenReturn(mockResponse)
+
+        // when
+        val ipRanges: List<String> = gcpIprangeService.getIpRangesByRegionAndByIpVersion(region = region)
+
+        // then
+        assertEquals(2, ipRanges.size)
+        assertEquals("35.185.160.0/20", ipRanges[0])
+        assertEquals("2600:1900:8000::/44", ipRanges[1])
     }
 }
