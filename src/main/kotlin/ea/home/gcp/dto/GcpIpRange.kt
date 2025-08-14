@@ -27,7 +27,7 @@ data class GcpIpRange(
         }
     }
 
-    fun isValidCidr(prefix: String): Boolean {
+    private fun isValidCidr(prefix: String): Boolean {
         return try {
             IPAddressString(prefix).isValid
         } catch (e: Exception) {
