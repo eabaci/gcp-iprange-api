@@ -1,6 +1,7 @@
 package ea.home.gcp.dto
 
 import ea.home.gcp.common.Region
+import inet.ipaddr.IPAddressString
 
 data class GcpIpRange(
     val ipv4Prefix: String?,
@@ -8,8 +9,12 @@ data class GcpIpRange(
     val service: String,
     val scope: String?
 ) {
+
     fun isValid(): Boolean {
-        return !(ipv4Prefix == null && ipv6Prefix == null)
+        val validIpv4 = ipv4Prefix?.let { isValidCidr(it) } ?: false
+        val validIpv6 = ipv6Prefix?.let { isValidCidr(it) } ?: false
+
+        return validIpv4 || validIpv6
     }
 
     fun matchesRegion(region: Region): Boolean {
@@ -19,6 +24,14 @@ data class GcpIpRange(
 
         return region.scopes.any { scopeValue ->
             scope.contains(scopeValue, ignoreCase = true)
+        }
+    }
+
+    fun isValidCidr(prefix: String): Boolean {
+        return try {
+            IPAddressString(prefix).isValid
+        } catch (e: Exception) {
+            false
         }
     }
 }

@@ -102,4 +102,64 @@ class GcpIpRangeTest {
 
         assertFalse(range.matchesRegion(Region.EU))
     }
+
+    @Test
+    fun `isValid should return false for invalid ipv4Prefix`() {
+        val range = GcpIpRange(
+            ipv4Prefix = "34.80.0.0/abc",
+            ipv6Prefix = null,
+            service = "Google Cloud",
+            scope = "europe-west1"
+        )
+
+        assertFalse(range.isValid())
+    }
+
+    @Test
+    fun `isValid should return false for invalid ipv6Prefix`() {
+        val range = GcpIpRange(
+            ipv4Prefix = null,
+            ipv6Prefix = "2600:1900:::/zzz",
+            service = "Google Cloud",
+            scope = "europe-west1"
+        )
+
+        assertFalse(range.isValid())
+    }
+
+    @Test
+    fun `isValid should return false for completely invalid ipv4Prefix`() {
+        val range = GcpIpRange(
+            ipv4Prefix = "999.999.999.999/24",
+            ipv6Prefix = null,
+            service = "Google Cloud",
+            scope = "europe-west1"
+        )
+
+        assertFalse(range.isValid())
+    }
+
+    @Test
+    fun `isValid should return false for invalid subnet size in ipv4`() {
+        val range = GcpIpRange(
+            ipv4Prefix = "10.0.0.0/35",
+            ipv6Prefix = null,
+            service = "Google Cloud",
+            scope = "europe-west1"
+        )
+
+        assertFalse(range.isValid())
+    }
+
+    @Test
+    fun `isValid should return false for invalid subnet size in ipv6`() {
+        val range = GcpIpRange(
+            ipv4Prefix = null,
+            ipv6Prefix = "2001:db8::/129",
+            service = "Google Cloud",
+            scope = "europe-west1"
+        )
+
+        assertFalse(range.isValid())
+    }
 }
