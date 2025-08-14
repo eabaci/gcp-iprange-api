@@ -58,6 +58,30 @@ class GcpIprangeControllerTest {
     }
 
     @Test
+    fun `should return ip ranges by region af (lowercase)`() {
+        // given
+        val gcpIpRanges = listOf("2600:1900:8000::/44")
+        val mockResponse = GcpIpRangesResponse(
+            prefixes = listOf(
+                GcpIpRange("35.185.128.0/19", null, "Google Cloud", "asia-east1"),
+                GcpIpRange("1.1.1.0/24", null, "Google Cloud", "europe-west1"),
+                GcpIpRange("35.185.160.0/20", null, "Google Cloud", "asia-east1"),
+                GcpIpRange(null, "2600:1900:8000::/44", "Google Cloud", "africa-south1"),
+                GcpIpRange(null, "2600:1900:4030::/44", "Google Cloud", "asia-east1")
+            )
+        )
+
+        // when
+        `when`(gcpIprangeService.getIpRangesByRegionAndByIpVersion(Region.AF, IpVersion.ALL)).thenReturn(gcpIpRanges)
+        `when`(restTemplate.getForObject(anyString(), eq(GcpIpRangesResponse::class.java))).thenReturn(mockResponse)
+
+        // then
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/gcp-ipranges?region=af"))
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andExpect(MockMvcResultMatchers.jsonPath("$").value("2600:1900:8000::/44"))
+    }
+
+    @Test
     fun `should return all ip ranges by no region and by no ip version`() {
         // given
         val gcpIpRanges = listOf("34.1.208.0/20", "34.85.0.0/17", "35.243.8.0/21")
@@ -94,5 +118,29 @@ class GcpIprangeControllerTest {
         // when & then
         mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/gcp-ipranges?ipVersion=ABZ"))
             .andExpect(MockMvcResultMatchers.status().isBadRequest)
+    }
+
+    @Test
+    fun `should return bad request by unknown region parameter`() {
+        // when & then
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/gcp-ipranges?reg=EU"))
+            .andExpect(MockMvcResultMatchers.status().isBadRequest)
+            .andExpect(MockMvcResultMatchers.content().string("Unerkannte Parameter: reg"))
+    }
+
+    @Test
+    fun `should return bad request by unknown ip version parameter`() {
+        // when & then
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/gcp-ipranges?ip=IPV6"))
+            .andExpect(MockMvcResultMatchers.status().isBadRequest)
+            .andExpect(MockMvcResultMatchers.content().string("Unerkannte Parameter: ip"))
+    }
+
+    @Test
+    fun `should return bad request by unknown ip version parameter and unknown region parameter`() {
+        // when & then
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/gcp-ipranges?reg=EU&ip=IPV6"))
+            .andExpect(MockMvcResultMatchers.status().isBadRequest)
+            .andExpect(MockMvcResultMatchers.content().string("Unerkannte Parameter: reg, ip"))
     }
 }
