@@ -6,7 +6,10 @@ import ea.home.gcp.dto.GcpIpRange
 import ea.home.gcp.dto.GcpIpRangesResponse
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
+import org.springframework.web.client.ResourceAccessException
+import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestTemplate
+import java.net.SocketTimeoutException
 
 @Service
 class GcpIprangeService(
@@ -15,8 +18,17 @@ class GcpIprangeService(
 ) {
 
     fun getIpRanges(): List<GcpIpRange> {
-        val response = restTemplate.getForObject(gcpIpRangesUrl, GcpIpRangesResponse::class.java)
-        return response?.prefixes ?: emptyList()
+        return try {
+            restTemplate.getForObject(gcpIpRangesUrl, GcpIpRangesResponse::class.java)?.prefixes ?: emptyList()
+        } catch (e: SocketTimeoutException) {
+            throw RuntimeException("Timeout beim Verbinden: ${e.message}", e)
+        } catch (e: ResourceAccessException) {
+            throw RuntimeException("Netzwerkfehler beim Aufruf der API: ${e.message}", e)
+        } catch (e: RestClientException) {
+            throw RuntimeException("REST-Client-Fehler: ${e.message}", e)
+        } catch (e: Exception) {
+            throw RuntimeException("Unerwarteter Fehler: ${e.message}", e)
+        }
     }
 
     fun getIpRangesByRegionAndByIpVersion(

@@ -6,10 +6,18 @@ import ea.home.gcp.dto.GcpIpRange
 import ea.home.gcp.dto.GcpIpRangesResponse
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.`when`
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.web.client.ResourceAccessException
+import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestTemplate
+import java.net.SocketTimeoutException
+import java.util.stream.Stream
 import kotlin.test.assertEquals
 
 @SpringBootTest
@@ -418,5 +426,48 @@ class GcpIprangeServiceTest {
 
         // then
         assertEquals(0, ipRanges.size)
+    }
+
+    @ParameterizedTest
+    @MethodSource("exceptionProvider")
+    fun `should throw RuntimeException with correct message for different exceptions`(
+        thrownException: Exception,
+        expectedMessagePrefix: String
+    ) {
+        // given
+        `when`(restTemplate.getForObject(testUrl, GcpIpRangesResponse::class.java))
+            .thenThrow(thrownException)
+
+        // when
+        val exception = assertThrows<RuntimeException> {
+            gcpIprangeService.getIpRanges()
+        }
+
+        // then
+        assert(exception.message!!.startsWith(expectedMessagePrefix)) {
+            "Expected message to start with '$expectedMessagePrefix' but was '${exception.message}'"
+        }
+    }
+
+    companion object {
+        @JvmStatic
+        fun exceptionProvider(): Stream<Arguments> = Stream.of(
+            Arguments.of(
+                ResourceAccessException("Timeout", SocketTimeoutException("Connection timed out")),
+                "Netzwerkfehler beim Aufruf der API"
+            ),
+            Arguments.of(
+                ResourceAccessException("I/O error"),
+                "Netzwerkfehler beim Aufruf der API"
+            ),
+            Arguments.of(
+                RestClientException("Client error"),
+                "REST-Client-Fehler"
+            ),
+            Arguments.of(
+                RuntimeException("Unknown failure"),
+                "Unerwarteter Fehler"
+            )
+        )
     }
 }
