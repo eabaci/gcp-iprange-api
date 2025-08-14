@@ -3,10 +3,10 @@ package ea.home.gcp
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
 
-@SpringBootTest
+@SpringBootTest(classes = [GcpIprangeApplication::class])
 class GcpIprangeApplicationTest {
 
     @Test
-    fun contextLoads() {
+    fun `application context should load successfully`() {
     }
 }

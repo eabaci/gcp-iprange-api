@@ -25,13 +25,9 @@ class GcpIprangeService(
     ): List<String> {
         val ipRanges = getIpRanges()
 
-        val filteredByRegion = if (region == Region.ALL) {
-            ipRanges
-        } else {
-            ipRanges.filter { prefix ->
-                region.scopes.any { scope -> prefix.scope.contains(scope, ignoreCase = true) }
-            }
-        }
+        val filteredByRegion = ipRanges.filter { it.isValid() }
+            .filter { it.matchesRegion(region) }
+            .toList()
 
         return filteredByRegion.mapNotNull { prefix ->
             when (ipVersion) {
