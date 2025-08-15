@@ -12,7 +12,6 @@ import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.`when`
-import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.web.client.ResourceAccessException
 import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestTemplate
@@ -20,7 +19,6 @@ import java.net.SocketTimeoutException
 import java.util.stream.Stream
 import kotlin.test.assertEquals
 
-@SpringBootTest
 class GcpIprangeServiceTest {
 
     private lateinit var restTemplate: RestTemplate

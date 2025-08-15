@@ -25,7 +25,7 @@ It provides a REST endpoint that filters the ranges by region and IP version (IP
 
 ## API Endpoint
 
-### `GET /ip-ranges`
+### `GET /api/v1/gcp-ipranges`
 Returns a list of IP ranges filtered by query parameters.
 
 #### Query Parameters:
